@@ -53,6 +53,6 @@ function lsp_has_capability(name)
 end
 
 return {
-	jump = jump,
-	lsp_has_capability = lsp_has_capability
+  jump = jump,
+  lsp_has_capability = lsp_has_capability
 }
