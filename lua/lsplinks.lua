@@ -38,8 +38,15 @@ end
 
 function jump_to_link_target(target)
   local file_uri, line_no, col_no = target:match('(.-)#(%d+),(%d+)')
-  vim.cmd.edit(vim.fn.fnameescape(vim.uri_to_fname(file_uri)))
-  vim.api.nvim_win_set_cursor(0, {tonumber(line_no), tonumber(col_no) - 1})
+  vim.lsp.util.jump_to_location({
+    uri = file_uri,
+    range = {
+      start = {
+        line = tonumber(line_no),
+        character = tonumber(col_no)
+      }
+    }
+  }, "utf-8", true)
 end
 
 function lsp_has_capability(name)
