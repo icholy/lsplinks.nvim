@@ -54,7 +54,15 @@ function lsp_has_capability(name)
   return false
 end
 
+function is_only_option()
+  if lsp_has_capability("definitionProvider") then
+    return false
+  end
+  return lsp_has_capability("documentLinkProvider")
+end
+
 return {
   jump = jump,
-  lsp_has_capability = lsp_has_capability
+  lsp_has_capability = lsp_has_capability,
+  is_only_option = is_only_option
 }
