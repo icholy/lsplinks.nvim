@@ -8,7 +8,7 @@ function jump()
     local cursor = get_cursor_pos()
     for _, link in pairs(result) do
       if in_range(cursor, link.range) then
-        jump_to_link_target(link.target)
+        jump_to_target(link.target)
         return
       end
     end
@@ -36,7 +36,7 @@ function in_range(pos, range)
   end
 end
 
-function jump_to_link_target(target)
+function jump_to_target(target)
   local file_uri, line_no, col_no = target:match('(file://.-)#(%d+),(%d+)')
   if file_uri then
     vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
