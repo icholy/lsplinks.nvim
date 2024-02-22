@@ -17,9 +17,9 @@ end
 
 function get_cursor_pos()
   local cursor = vim.api.nvim_win_get_cursor(0)
-  cursor[1] = cursor[1] - 1 -- Adjust line number for 0-indexing
-  cursor[2] = vim.lsp.util.character_offset(0, cursor[1], cursor[2], "utf-8")
-  return { line = cursor[1], character = cursor[2] }
+  local line = cursor[1] - 1 -- adjust line number for 0-indexing
+  local character = vim.lsp.util.character_offset(0, line, cursor[2], "utf-8")
+  return { line = line, character = character }
 end
 
 function in_range(pos, range)
@@ -46,8 +46,7 @@ end
 
 function lsp_has_capability(name)
   for _, client in ipairs(vim.lsp.buf_get_clients()) do
-    local capabilities = client.server_capabilities
-    if capabilities[name] then
+    if client.server_capabilities[name] then
       return true
     end
   end
