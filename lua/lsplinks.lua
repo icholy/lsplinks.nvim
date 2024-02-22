@@ -18,7 +18,7 @@ end
 function get_cursor_pos()
   local cursor = vim.api.nvim_win_get_cursor(0)
   cursor[1] = cursor[1] - 1 -- Adjust line number for 0-indexing
-  cursor[2] = vim.lsp.util.character_offset(0, cursor[1], cursor[2])
+  cursor[2] = vim.lsp.util.character_offset(0, cursor[1], cursor[2], "utf-8")
   return { line = cursor[1], character = cursor[2] }
 end
 
