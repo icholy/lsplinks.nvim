@@ -1,18 +1,38 @@
 function jump()
-  local params = { textDocument = { uri = vim.uri_from_bufnr(0) } }
-  vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, result)
-    if err then
-      vim.api.nvim_err_writeln(err.message)
-      return
-    end
+  refresh(0, function(links)
     local cursor = get_cursor_pos()
-    for _, link in pairs(result) do
+    for _, link in ipairs(get(0)) do
       if in_range(cursor, link.range) then
         jump_to_target(link.target)
         return
       end
     end
   end)
+end
+
+local links_by_buf = {}
+
+function refresh(bufnr)
+  local bufnr = bufnr or 0
+  local params = { textDocument = { uri = vim.uri_from_bufnr(bufnr) } }
+  vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, links)
+    if err then
+      vim.api.nvim_err_writeln(err.message)
+      return
+    end
+    links_by_buf[bufnr] = links
+    if callback then
+      callback()
+    end
+  end)
+end
+
+function get(bufnr)
+  return links_by_buf[bufnr or 0] or {}
+end
+
+function setup()
+  -- TODO
 end
 
 function get_cursor_pos()
@@ -60,8 +80,12 @@ function is_only_option()
   return lsp_has_capability("documentLinkProvider")
 end
 
+function refresh()
+end
+
 return {
   jump = jump,
+  refresh = refresh
   lsp_has_capability = lsp_has_capability,
   is_only_option = is_only_option
 }
