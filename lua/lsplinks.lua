@@ -1,4 +1,4 @@
-local util = require('vim.lsp.util')
+local util = require("vim.lsp.util")
 local api = vim.api
 local M = {}
 
@@ -29,14 +29,14 @@ end
 ---@param range lsp.Range
 ---@return boolean
 local function in_range(pos, range)
-  if pos.line > range.start.line and pos.line < range['end'].line then
+  if pos.line > range.start.line and pos.line < range["end"].line then
     return true
-  elseif pos.line == range.start.line and pos.line == range['end'].line then
-    return pos.character >= range.start.character and pos.character <= range['end'].character
+  elseif pos.line == range.start.line and pos.line == range["end"].line then
+    return pos.character >= range.start.character and pos.character <= range["end"].character
   elseif pos.line == range.start.line then
     return pos.character >= range.start.character
-  elseif pos.line == range['end'].line then
-    return pos.character <= range['end'].character
+  elseif pos.line == range["end"].line then
+    return pos.character <= range["end"].character
   else
     return false
   end
@@ -55,14 +55,14 @@ end
 
 ---@param target string
 local function jump_to_target(target)
-  local file_uri, line_no, col_no = target:match('(file://.-)#(%d+),(%d+)')
+  local file_uri, line_no, col_no = target:match("(file://.-)#(%d+),(%d+)")
   if file_uri then
     vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
     api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
   end
 end
 
-local augroup = api.nvim_create_augroup('icholy/lsplinks.nvim', {})
+local augroup = api.nvim_create_augroup("icholy/lsplinks.nvim", {})
 
 --- Setup autocommands for refreshing links
 function M.setup()
