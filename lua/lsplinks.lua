@@ -2,10 +2,22 @@ local util = require('vim.lsp.util')
 local api = vim.api
 local M = {}
 
+---@class lsp.Position
+---@field line integer
+---@field character integer
+
+---@class lsp.Range
+---@field start lsp.Position
+---@field end lsp.Position
+
+---@class lsp.DocumentLink
+---@field range lsp.Range
+---@field target string
+
+---@type table<integer, lsp.DocumentLink[]>
 local links_by_buf = {}
 
-local augroup = api.nvim_create_augroup('icholy/nvim-lsplinks', {})
-
+---@return lsp.Position
 local function get_cursor_pos()
   local cursor = api.nvim_win_get_cursor(0)
   local line = cursor[1] - 1 -- adjust line number for 0-indexing
@@ -13,6 +25,9 @@ local function get_cursor_pos()
   return { line = line, character = character }
 end
 
+---@param pos lsp.Position
+---@param range lsp.Range
+---@return boolean
 local function in_range(pos, range)
   if pos.line > range.start.line and pos.line < range['end'].line then
     return true
@@ -27,6 +42,8 @@ local function in_range(pos, range)
   end
 end
 
+---@param name string
+---@return boolean
 local function lsp_has_capability(name)
   for _, client in ipairs(vim.lsp.buf_get_clients()) do
     if client.server_capabilities[name] then
@@ -36,6 +53,7 @@ local function lsp_has_capability(name)
   return false
 end
 
+---@param target string
 local function jump_to_target(target)
   local file_uri, line_no, col_no = target:match('(file://.-)#(%d+),(%d+)')
   if file_uri then
@@ -44,6 +62,9 @@ local function jump_to_target(target)
   end
 end
 
+local augroup = api.nvim_create_augroup('icholy/nvim-lsplinks', {})
+
+--- Setup autocommands for refreshing links
 function M.setup()
   api.nvim_create_autocmd("InsertLeave", {
     group = augroup,
@@ -59,6 +80,10 @@ function M.setup()
   })
 end
 
+--- Jump to the link under the cursor if one exists.
+--- The return value indicates if a link was found.
+---
+---@return boolean
 function M.jump()
   local cursor = get_cursor_pos()
   for _, link in ipairs(M.get(0)) do
@@ -70,6 +95,7 @@ function M.jump()
   return false
 end
 
+-- Refresh the links for the current buffer
 function M.refresh()
   if not lsp_has_capability("documentLinkProvider") then
     return
@@ -80,21 +106,20 @@ function M.refresh()
       api.nvim_err_writeln(err.message)
       return
     end
-    M.save(result, ctx.bufnr)
+    if not links_by_buf[ctx.bufnr] then
+      api.nvim_buf_attach(ctx.bufnr, false, {
+        on_detach = function(b)
+          links_by_buf[b] = nil
+        end
+      })
+    end
+    links_by_buf[ctx.bufnr] = result
   end)
 end
 
-function M.save(links, bufnr)
-  if not links_by_buf[bufnr] then
-    api.nvim_buf_attach(bufnr, false, {
-      on_detach = function(b)
-        links_by_buf[b] = nil
-      end
-    })
-  end
-  links_by_buf[bufnr] = links
-end
-
+--- Get links for bufnr
+---@param bufnr integer
+---@return lsp.DocumentLink[]
 function M.get(bufnr)
   bufnr = bufnr or 0
   if bufnr == 0 then
