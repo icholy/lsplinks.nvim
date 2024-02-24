@@ -62,7 +62,7 @@ local function jump_to_target(target)
   end
 end
 
-local augroup = api.nvim_create_augroup('icholy/nvim-lsplinks', {})
+local augroup = api.nvim_create_augroup('icholy/lsplinks.nvim', {})
 
 --- Setup autocommands for refreshing links
 function M.setup()
