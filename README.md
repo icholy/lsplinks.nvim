@@ -21,7 +21,9 @@ Replace your existing goto-defintion mapping with the following:
 ``` lua
 vim.keymap.set("n", "gd", function()
     local lsplinks = require("lsplinks")
-    lsplinks.jump() or vim.lsp.buf.definition()
+    if not lsplinks.jump() then
+        vim.lsp.buf.definition()
+    end
 end)
 ```
 
@@ -35,7 +37,9 @@ end)
         lsplinks.setup()
         vim.keymap.set("n", "gd", function()
             local lsplinks = require("lsplinks")
-            lsplinks.jump() or vim.lsp.buf.definition()
+            if not lsplinks.jump() then
+                vim.lsp.buf.definition()
+            end
         end)
     end
 }
