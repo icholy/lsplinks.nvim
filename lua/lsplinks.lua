@@ -1,48 +1,16 @@
-function jump()
-  refresh(0, function(links)
-    local cursor = get_cursor_pos()
-    for _, link in ipairs(get(0)) do
-      if in_range(cursor, link.range) then
-        jump_to_target(link.target)
-        return
-      end
-    end
-  end)
-end
+local util = require('vim.lsp.util')
+local M = {}
 
 local links_by_buf = {}
 
-function refresh(bufnr)
-  local bufnr = bufnr or 0
-  local params = { textDocument = { uri = vim.uri_from_bufnr(bufnr) } }
-  vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, links)
-    if err then
-      vim.api.nvim_err_writeln(err.message)
-      return
-    end
-    links_by_buf[bufnr] = links
-    if callback then
-      callback()
-    end
-  end)
-end
-
-function get(bufnr)
-  return links_by_buf[bufnr or 0] or {}
-end
-
-function setup()
-  -- TODO
-end
-
-function get_cursor_pos()
+local function get_cursor_pos()
   local cursor = vim.api.nvim_win_get_cursor(0)
   local line = cursor[1] - 1 -- adjust line number for 0-indexing
   local character = vim.lsp.util.character_offset(0, line, cursor[2], "utf-8")
   return { line = line, character = character }
 end
 
-function in_range(pos, range)
+local function in_range(pos, range)
   if pos.line > range.start.line and pos.line < range['end'].line then
     return true
   elseif pos.line == range.start.line and pos.line == range['end'].line then
@@ -56,7 +24,7 @@ function in_range(pos, range)
   end
 end
 
-function jump_to_target(target)
+local function jump_to_target(target)
   local file_uri, line_no, col_no = target:match('(file://.-)#(%d+),(%d+)')
   if file_uri then
     vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
@@ -64,28 +32,45 @@ function jump_to_target(target)
   end
 end
 
-function lsp_has_capability(name)
-  for _, client in ipairs(vim.lsp.buf_get_clients()) do
-    if client.server_capabilities[name] then
-      return true
+local function resolve_bufnr(bufnr)
+  return bufnr == 0 and vim.api.nvim_get_current_buf() or bufnr
+end
+
+function M.jump()
+  local cursor = get_cursor_pos()
+  for _, link in ipairs(M.get(0)) do
+    if in_range(cursor, link.range) then
+      jump_to_target(link.target)
+      return
     end
   end
-  return false
 end
 
-function is_only_option()
-  if lsp_has_capability("definitionProvider") then
-    return false
+function M.refresh()
+  local params = { textDocument = util.make_text_document_params() }
+  vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, result, ctx)
+    if err then
+      vim.api.nvim_err_writeln(err.message)
+      return
+    end
+    M.save(result, ctx.bufnr)
+  end)
+end
+
+function M.save(links, bufnr)
+  if not links_by_buf[bufnr] then
+    vim.api.nvim_buf_attach(bufnr, false, {
+      on_detach = function(b)
+        links_by_buf[b] = nil
+      end
+    })
   end
-  return lsp_has_capability("documentLinkProvider")
+  links_by_buf[bufnr] = links
 end
 
-function refresh()
+function M.get(bufnr)
+  bufnr = resolve_bufnr(bufnr or 0)
+  return links_by_buf[bufnr] or {}
 end
 
-return {
-  jump = jump,
-  refresh = refresh
-  lsp_has_capability = lsp_has_capability,
-  is_only_option = is_only_option
-}
+return M
