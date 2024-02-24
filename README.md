@@ -10,14 +10,18 @@ My testing was done using: https://github.com/neovim/nvim-lspconfig/blob/master/
 
 ### Example Configuration:
 
+Call `setup` to initialise the plugin:
+
+``` lua
+require("lsplinks").setup()
+```
+
 Replace your existing goto-defintion mapping with the following:
 
 ``` lua
 vim.keymap.set("n", "gd", function()
     local lsplinks = require("lsplinks")
-    if lsplinks.is_only_option() then
-        lsplinks.jump()
-    else
+    if not lsplinks.jump() then
         vim.lsp.buf.definition()
     end
 end)
