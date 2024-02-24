@@ -29,8 +29,7 @@ end
 
 local function lsp_has_capability(name)
   for _, client in ipairs(vim.lsp.buf_get_clients()) do
-    local capabilities = client.server_capabilities
-    if capabilities[name] then
+    if client.server_capabilities[name] then
       return true
     end
   end
@@ -43,10 +42,6 @@ local function jump_to_target(target)
     vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
     api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
   end
-end
-
-local function resolve_bufnr(bufnr)
-  return bufnr == 0 and api.nvim_get_current_buf() or bufnr
 end
 
 function M.setup()
@@ -101,7 +96,10 @@ function M.save(links, bufnr)
 end
 
 function M.get(bufnr)
-  bufnr = resolve_bufnr(bufnr or 0)
+  bufnr = bufnr or 0
+  if bufnr == 0 then
+    bufnr = api.nvim_get_current_buf()
+  end
   return links_by_buf[bufnr] or {}
 end
 
