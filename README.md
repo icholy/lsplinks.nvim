@@ -8,7 +8,7 @@
 This plugin requires an existing lsp server which supports document links.
 My testing was done using: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#jsonls
 
-### Example Configuration:
+### Configuration:
 
 Call `setup` to initialise the plugin:
 
@@ -21,13 +21,11 @@ Replace your existing goto-defintion mapping with the following:
 ``` lua
 vim.keymap.set("n", "gd", function()
     local lsplinks = require("lsplinks")
-    if not lsplinks.jump() then
-        vim.lsp.buf.definition()
-    end
+    lsplinks.jump() or vim.lsp.buf.definition()
 end)
 ```
 
-### Example Lazy Configuration:
+### Lazy Configuration:
 
 ``` lua
 {
@@ -37,9 +35,7 @@ end)
         lsplinks.setup()
         vim.keymap.set("n", "gd", function()
             local lsplinks = require("lsplinks")
-            if not lsplinks.jump() then
-                vim.lsp.buf.definition()
-            end
+            lsplinks.jump() or vim.lsp.buf.definition()
         end)
     end
 }
