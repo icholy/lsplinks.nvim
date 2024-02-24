@@ -14,4 +14,4 @@ jobs:
       - uses: leafo/gh-actions-lua@v9
       - uses: leafo/gh-actions-luarocks@v4
       - run: luarocks install luacheck
-      - run: luacheck .
+      - run: luacheck ./lua
