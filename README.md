@@ -21,6 +21,7 @@ Replace your existing goto-defintion mapping with the following:
 ``` lua
 vim.keymap.set("n", "gd", function()
     local lsplinks = require("lsplinks")
+    -- jump returns false when there's no link under the cursor
     if not lsplinks.jump() then
         vim.lsp.buf.definition()
     end
