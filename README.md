@@ -26,3 +26,23 @@ vim.keymap.set("n", "gd", function()
     end
 end)
 ```
+
+### Example Lazy Configuration:
+
+``` lua
+{
+    "icholy/lsplinks.nvim",
+    config = function()
+        local lsplinks = require("lsplinks")
+        lsplinks.setup()
+        vim.keymap.set("n", "gd", function()
+            local lsplinks = require("lsplinks")
+            if not lsplinks.jump() then
+                vim.lsp.buf.definition()
+            end
+        end)
+    end
+}
+```
+
+
