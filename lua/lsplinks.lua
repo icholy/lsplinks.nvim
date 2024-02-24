@@ -1,10 +1,13 @@
 local util = require('vim.lsp.util')
+local api = vim.api
 local M = {}
 
 local links_by_buf = {}
 
+local augroup = api.nvim_create_augroup('vim_lsp_lsplinks', {})
+
 local function get_cursor_pos()
-  local cursor = vim.api.nvim_win_get_cursor(0)
+  local cursor = api.nvim_win_get_cursor(0)
   local line = cursor[1] - 1 -- adjust line number for 0-indexing
   local character = vim.lsp.util.character_offset(0, line, cursor[2], "utf-8")
   return { line = line, character = character }
@@ -28,12 +31,27 @@ local function jump_to_target(target)
   local file_uri, line_no, col_no = target:match('(file://.-)#(%d+),(%d+)')
   if file_uri then
     vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
-    vim.api.nvim_win_set_cursor(0, {tonumber(line_no), tonumber(col_no) - 1})
+    api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
   end
 end
 
 local function resolve_bufnr(bufnr)
-  return bufnr == 0 and vim.api.nvim_get_current_buf() or bufnr
+  return bufnr == 0 and api.nvim_get_current_buf() or bufnr
+end
+
+function M.setup()
+  api.nvim_create_autocmd("InsertLeave", {
+    group = augroup,
+    callback = M.refresh
+  })
+  api.nvim_create_autocmd("BufEnter", {
+    group = augroup,
+    callback = M.refresh
+  })
+  api.nvim_create_autocmd("LspAttach", {
+    group = augroup,
+    callback = M.refresh
+  })
 end
 
 function M.jump()
@@ -41,16 +59,17 @@ function M.jump()
   for _, link in ipairs(M.get(0)) do
     if in_range(cursor, link.range) then
       jump_to_target(link.target)
-      return
+      return true
     end
   end
+  return false
 end
 
 function M.refresh()
   local params = { textDocument = util.make_text_document_params() }
   vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, result, ctx)
     if err then
-      vim.api.nvim_err_writeln(err.message)
+      api.nvim_err_writeln(err.message)
       return
     end
     M.save(result, ctx.bufnr)
@@ -59,7 +78,7 @@ end
 
 function M.save(links, bufnr)
   if not links_by_buf[bufnr] then
-    vim.api.nvim_buf_attach(bufnr, false, {
+    api.nvim_buf_attach(bufnr, false, {
       on_detach = function(b)
         links_by_buf[b] = nil
       end
