@@ -4,7 +4,7 @@ local M = {}
 
 local links_by_buf = {}
 
-local augroup = api.nvim_create_augroup('vim_lsp_lsplinks', {})
+local augroup = api.nvim_create_augroup('icholy/nvim-lsplinks', {})
 
 local function get_cursor_pos()
   local cursor = api.nvim_win_get_cursor(0)
@@ -25,6 +25,16 @@ local function in_range(pos, range)
   else
     return false
   end
+end
+
+local function lsp_has_capability(name)
+  for _, client in ipairs(vim.lsp.buf_get_clients()) do
+    local capabilities = client.server_capabilities
+    if capabilities[name] then
+      return true
+    end
+  end
+  return false
 end
 
 local function jump_to_target(target)
@@ -66,6 +76,9 @@ function M.jump()
 end
 
 function M.refresh()
+  if not lsp_has_capability("documentLinkProvider") then
+    return
+  end
   local params = { textDocument = util.make_text_document_params() }
   vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, result, ctx)
     if err then
