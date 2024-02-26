@@ -53,17 +53,6 @@ local function lsp_has_capability(name)
   return false
 end
 
----@param uri string
-local function open_uri(uri)
-  local file_uri, line_no, col_no = uri:match("(.-)#(%d+),(%d+)")
-  if file_uri then
-    vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
-    api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
-  else
-    vim.ui.open(uri)
-  end
-end
-
 local augroup = api.nvim_create_augroup("icholy/lsplinks.nvim", {})
 
 --- Setup autocommands for refreshing links
@@ -74,19 +63,44 @@ function M.setup()
   })
 end
 
+--- Return the link under the cursor.
+---
+---@return string | nil
+function M.current()
+  local cursor = get_cursor_pos()
+  for _, link in ipairs(M.get()) do
+    if in_range(cursor, link.range) then
+      return link.target
+    end
+  end
+  return nil
+end
+
 --- Open the link under the cursor if one exists.
 --- The return value indicates if a link was found.
 ---
+---@param uri string | nil
 ---@return boolean
-function M.open()
-  local cursor = get_cursor_pos()
-  for _, link in ipairs(M.get(0)) do
-    if in_range(cursor, link.range) then
-      open_uri(link.target)
-      return true
-    end
+function M.open(uri)
+  uri = uri or M.current()
+  if not uri then
+    return false
   end
-  return false
+  local file_uri, line_no, col_no = uri:match("(.-)#(%d+),(%d+)")
+  if file_uri then
+    vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
+    api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
+  else
+    vim.ui.open(uri)
+  end
+  return true
+end
+
+--- Convinience function which opens current link with fallback
+--- to default gx behaviour
+function M.gx()
+  local uri = M.current() or vim.fn.expand("<cfile>")
+  M.open(uri)
 end
 
 --- Deprecated
@@ -117,7 +131,7 @@ function M.refresh()
 end
 
 --- Get links for bufnr
----@param bufnr integer
+---@param bufnr integer | nil
 ---@return lsp.DocumentLink[]
 function M.get(bufnr)
   bufnr = bufnr or 0

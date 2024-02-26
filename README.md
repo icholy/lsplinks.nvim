@@ -19,13 +19,7 @@ require("lsplinks").setup()
 Replace the `gx` mapping with the following:
 
 ``` lua
-vim.keymap.set("n", "gx", function()
-    local lsplinks = require("lsplinks")
-    -- open returns false when there's no link under the cursor
-    if not lsplinks.open() then
-        vim.ui.open(vim.fn.expand("<cfile>"))
-    end
-end)
+vim.keymap.set("n", "gx", lsplinks.gx)
 ```
 
 ### Lazy Configuration:
@@ -36,11 +30,7 @@ end)
     config = function()
         local lsplinks = require("lsplinks")
         lsplinks.setup()
-        vim.keymap.set("n", "gx", function()
-            if not lsplinks.open() then
-                vim.ui.open(vim.fn.expand("<cfile>"))
-            end
-        end)
+        vim.keymap.set("n", "gx", lsplinks.gx)
     end
 }
 ```
