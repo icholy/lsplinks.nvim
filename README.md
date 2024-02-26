@@ -16,14 +16,14 @@ Call `setup` to initialise the plugin:
 require("lsplinks").setup()
 ```
 
-Replace your existing goto-defintion mapping with the following:
+Replace the `gx` mapping with the following:
 
 ``` lua
-vim.keymap.set("n", "gd", function()
+vim.keymap.set("n", "gx", function()
     local lsplinks = require("lsplinks")
     -- jump returns false when there's no link under the cursor
     if not lsplinks.jump() then
-        vim.lsp.buf.definition()
+        vim.ui.open(vim.fn.expand("<cfile>"))
     end
 end)
 ```
@@ -36,10 +36,10 @@ end)
     config = function()
         local lsplinks = require("lsplinks")
         lsplinks.setup()
-        vim.keymap.set("n", "gd", function()
+        vim.keymap.set("n", "gx", function()
             local lsplinks = require("lsplinks")
             if not lsplinks.jump() then
-                vim.lsp.buf.definition()
+                vim.ui.open(vim.fn.expand("<cfile>"))
             end
         end)
     end
