@@ -37,7 +37,6 @@ end)
         local lsplinks = require("lsplinks")
         lsplinks.setup()
         vim.keymap.set("n", "gx", function()
-            local lsplinks = require("lsplinks")
             if not lsplinks.open() then
                 vim.ui.open(vim.fn.expand("<cfile>"))
             end
