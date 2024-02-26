@@ -1,6 +1,6 @@
 # LSPLINKS
 
-> Basic support for document links for neovim.
+> Support for document links for neovim.
 > This includes openapi/swagger $refs when using jsonls.
 
 ### Prerequisites:
