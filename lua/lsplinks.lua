@@ -53,12 +53,35 @@ local function lsp_has_capability(name)
   return false
 end
 
----@param target string
-local function jump_to_target(target)
-  local file_uri, line_no, col_no = target:match("(file://.-)#(%d+),(%d+)")
+---@param uri string
+local function open_file(uri)
+  local file_uri, line_no, col_no = uri:match("(.-)#(%d+),(%d+)")
   if file_uri then
     vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
     api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
+  else
+    vim.lsp.util.jump_to_location({ uri = uri }, "utf-8", true)
+  end
+end
+
+---@param uri string
+local function open_browser(uri)
+  local quoted_uri = '"' .. uri .. '"'
+  if jit.os == "Windows" then
+    vim.fn.system("start " .. quoted_uri)
+  elseif jit.os == "OSX" then
+    vim.fn.system("open " .. quoted_uri)
+  else
+    vim.fn.system("xdg-open " .. quoted_uri)
+  end
+end
+
+---@param uri string
+local function open_uri(uri)
+  if uri:match("^file://") then
+    open_file(uri)
+  else
+    open_browser(uri)
   end
 end
 
@@ -80,7 +103,7 @@ function M.jump()
   local cursor = get_cursor_pos()
   for _, link in ipairs(M.get(0)) do
     if in_range(cursor, link.range) then
-      jump_to_target(link.target)
+      open_uri(link.target)
       return true
     end
   end
