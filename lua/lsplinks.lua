@@ -74,11 +74,11 @@ function M.setup()
   })
 end
 
---- Jump to the link under the cursor if one exists.
+--- Open the link under the cursor if one exists.
 --- The return value indicates if a link was found.
 ---
 ---@return boolean
-function M.jump()
+function M.open()
   local cursor = get_cursor_pos()
   for _, link in ipairs(M.get(0)) do
     if in_range(cursor, link.range) then
@@ -87,6 +87,11 @@ function M.jump()
     end
   end
   return false
+end
+
+--- Deprecated
+function M.jump()
+  M.open()
 end
 
 -- Refresh the links for the current buffer

@@ -21,8 +21,8 @@ Replace the `gx` mapping with the following:
 ``` lua
 vim.keymap.set("n", "gx", function()
     local lsplinks = require("lsplinks")
-    -- jump returns false when there's no link under the cursor
-    if not lsplinks.jump() then
+    -- open returns false when there's no link under the cursor
+    if not lsplinks.open() then
         vim.ui.open(vim.fn.expand("<cfile>"))
     end
 end)
@@ -38,7 +38,7 @@ end)
         lsplinks.setup()
         vim.keymap.set("n", "gx", function()
             local lsplinks = require("lsplinks")
-            if not lsplinks.jump() then
+            if not lsplinks.open() then
                 vim.ui.open(vim.fn.expand("<cfile>"))
             end
         end)
