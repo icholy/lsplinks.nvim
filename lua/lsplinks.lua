@@ -69,7 +69,7 @@ local function open_browser(uri)
   local quoted_uri = '"' .. uri .. '"'
   if jit.os == "Windows" then
     vim.fn.system("start " .. quoted_uri)
-  elseif jit.os == "MACOS" then
+  elseif jit.os == "OSX" then
     vim.fn.system("open " .. quoted_uri)
   else
     vim.fn.system("xdg-open " .. quoted_uri)
