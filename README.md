@@ -19,7 +19,7 @@ require("lsplinks").setup()
 Replace the `gx` mapping with the following:
 
 ``` lua
-vim.keymap.set("n", "gx", lsplinks.gx)
+vim.keymap.set("n", "gx", require("lsplinks").gx)
 ```
 
 ### Lazy Configuration:
