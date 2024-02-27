@@ -80,6 +80,18 @@ function M.current()
   return nil
 end
 
+--- Return the uri without the fragment
+---
+---@param uri string
+---@return string
+local function remove_uri_fragment(uri)
+  local fragment_index = uri:find("#")
+  if fragment_index ~= nil then
+    uri = uri:sub(1, fragment_index - 1)
+  end
+  return uri
+end
+
 --- Open the link under the cursor if one exists.
 --- The return value indicates if a link was found.
 ---
@@ -90,10 +102,12 @@ function M.open(uri)
   if not uri then
     return false
   end
-  local file_uri, line_no, col_no = uri:match("(.-)#(%d+),(%d+)")
-  if file_uri then
-    vim.lsp.util.jump_to_location({ uri = file_uri }, "utf-8", true)
-    api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
+  if uri:find("^file://") then
+    vim.lsp.util.jump_to_location({ uri = remove_uri_fragment(uri) }, "utf-8", true)
+    local line_no, col_no = uri:match(".-#(%d+),(%d+)")
+    if line_no then
+      api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
+    end
   else
     vim.ui.open(uri)
   end
