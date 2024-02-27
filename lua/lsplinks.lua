@@ -17,6 +17,9 @@ local M = {}
 ---@type table<integer, lsp.DocumentLink[]>
 local links_by_buf = {}
 
+---@type integer
+local ns = api.nvim_create_namespace('lsplinks')
+
 ---@return lsp.Position
 local function get_cursor_pos()
   local cursor = api.nvim_win_get_cursor(0)
@@ -123,10 +126,14 @@ function M.refresh()
       api.nvim_buf_attach(ctx.bufnr, false, {
         on_detach = function(b)
           links_by_buf[b] = nil
-        end
+        end,
+        on_lines = function(_, b, _, first_lnum, last_lnum)
+          api.nvim_buf_clear_namespace(b, ns, first_lnum, last_lnum)
+        end,
       })
     end
     links_by_buf[ctx.bufnr] = result
+    M.display()
   end)
 end
 
@@ -141,18 +148,19 @@ function M.get(bufnr)
   return links_by_buf[bufnr] or {}
 end
 
-local ns = api.nvim_create_namespace('lsplinks')
-
 --- Highlight links in the current buffer with @text.uri
 function M.display()
   for _, link in ipairs(M.get()) do
-    api.nvim_buf_add_highlight(
+    api.nvim_buf_set_extmark(
       0,
       ns,
-      "@text.uri",
       link.range.start.line,
       link.range.start.character,
-      link.range["end"].character
+      {
+        end_row = link.range["end"].line,
+        end_col = link.range["end"].character,
+        hl_group="Underlined"
+      }
     )
   end
 end
