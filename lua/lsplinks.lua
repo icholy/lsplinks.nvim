@@ -60,7 +60,7 @@ local augroup = api.nvim_create_augroup("icholy/lsplinks.nvim", {})
 
 --- Setup autocommands for refreshing links
 function M.setup()
-  api.nvim_create_autocmd({"InsertLeave", "BufEnter", "LspAttach"}, {
+  api.nvim_create_autocmd({"InsertLeave", "BufEnter", "CursorHold", "LspAttach"}, {
     group = augroup,
     callback = M.refresh
   })
