@@ -141,4 +141,18 @@ function M.get(bufnr)
   return links_by_buf[bufnr] or {}
 end
 
+--- Highlight links in the current buffer with @text.uri
+function M.display()
+  for _, link in ipairs(M.get()) do
+    vim.api.nvim_buf_add_highlight(
+      0,
+      ns,
+      "@text.uri",
+      link.range.start.line,
+      link.range.start.character,
+      link.range["end"].character
+    )
+  end
+end
+
 return M
