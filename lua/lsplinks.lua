@@ -148,8 +148,9 @@ function M.get(bufnr)
   return links_by_buf[bufnr] or {}
 end
 
---- Highlight links in the current buffer with @text.uri
+--- Highlight links in the current buffer
 function M.display()
+  api.nvim_buf_clear_namespace(0, ns, 0, -1)
   for _, link in ipairs(M.get()) do
     api.nvim_buf_set_extmark(
       0,
