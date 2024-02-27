@@ -141,10 +141,12 @@ function M.get(bufnr)
   return links_by_buf[bufnr] or {}
 end
 
+local ns = api.nvim_create_namespace('lsplinks')
+
 --- Highlight links in the current buffer with @text.uri
 function M.display()
   for _, link in ipairs(M.get()) do
-    vim.api.nvim_buf_add_highlight(
+    api.nvim_buf_add_highlight(
       0,
       ns,
       "@text.uri",
