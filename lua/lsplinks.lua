@@ -1,4 +1,5 @@
 local util = require("vim.lsp.util")
+local log = require("vim.lsp.log")
 local api = vim.api
 local M = {}
 
@@ -24,7 +25,7 @@ local ns = api.nvim_create_namespace('lsplinks')
 local function get_cursor_pos()
   local cursor = api.nvim_win_get_cursor(0)
   local line = cursor[1] - 1 -- adjust line number for 0-indexing
-  local character = vim.lsp.util.character_offset(0, line, cursor[2], "utf-8")
+  local character = util.character_offset(0, line, cursor[2], "utf-8")
   return { line = line, character = character }
 end
 
@@ -103,7 +104,7 @@ function M.open(uri)
     return false
   end
   if uri:find("^file://") then
-    vim.lsp.util.jump_to_location({ uri = remove_uri_fragment(uri) }, "utf-8", true)
+    util.jump_to_location({ uri = remove_uri_fragment(uri) }, "utf-8", true)
     local line_no, col_no = uri:match(".-#(%d+),(%d+)")
     if line_no then
       api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
@@ -134,7 +135,7 @@ function M.refresh()
   local params = { textDocument = util.make_text_document_params() }
   vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, result, ctx)
     if err then
-      api.nvim_err_writeln(err.message)
+      log.error('lsplinks', err)
       return
     end
     if not links_by_buf[ctx.bufnr] then
