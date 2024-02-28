@@ -48,7 +48,7 @@ end
 ---@param name string
 ---@return boolean
 local function lsp_has_capability(name)
-  for _, client in ipairs(vim.lsp.buf_get_clients()) do
+  for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
     if client.server_capabilities[name] then
       return true
     end
