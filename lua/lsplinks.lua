@@ -133,7 +133,7 @@ function M.refresh()
   local params = { textDocument = util.make_text_document_params() }
   vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, result, ctx)
     if err then
-      log.error('lsplinks', err)
+      log.error("lsplinks", err)
       return
     end
     if not links_by_buf[ctx.bufnr] then
