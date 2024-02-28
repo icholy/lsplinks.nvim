@@ -123,9 +123,7 @@ function M.gx()
 end
 
 --- Deprecated
-function M.jump()
-  M.open()
-end
+M.jump = M.open
 
 -- Refresh the links for the current buffer
 function M.refresh()
