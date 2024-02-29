@@ -19,7 +19,7 @@ local M = {}
 local links_by_buf = {}
 
 ---@type integer
-local ns = api.nvim_create_namespace('lsplinks')
+local ns = api.nvim_create_namespace("lsplinks")
 
 ---@return lsp.Position
 local function get_cursor_pos()
