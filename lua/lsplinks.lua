@@ -103,7 +103,7 @@ function M.open(uri)
   if not uri then
     return false
   end
-  if uri:find("^file://") then
+  if uri:find("^file:/") then
     util.jump_to_location({ uri = remove_uri_fragment(uri) }, "utf-8", true)
     local line_no, col_no = uri:match(".-#(%d+),(%d+)")
     if line_no then
