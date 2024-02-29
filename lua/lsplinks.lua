@@ -57,7 +57,7 @@ local function lsp_has_capability(name)
   return false
 end
 
-local augroup = api.nvim_create_augroup("icholy/lsplinks.nvim", {})
+local augroup = api.nvim_create_augroup("lsplinks", { clear = true })
 
 --- Setup autocommands for refreshing links
 function M.setup()
