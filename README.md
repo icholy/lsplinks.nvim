@@ -30,7 +30,7 @@ Jump to `$ref` links in swagger/openapi files.
 
 ![](./demo1.gif)
 
-### Demo 1: 
+### Demo 2: 
 
 Open https://pkg.go.dev from your `go.mod` or import statements.
 
