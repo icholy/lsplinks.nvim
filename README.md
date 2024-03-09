@@ -7,7 +7,7 @@
 The default behaviour of [gx](https://neovim.io/doc/user/various.html#gx) is described in the neovim help as:
 
 > Opens the current filepath or URL (decided by
-> <cfile>, 'isfname') at cursor using the system
+> `<cfile>`, 'isfname') at cursor using the system
 > default handler, by calling vim.ui.open().
 
 This plugin extends this behaviour to support LSP document links.
