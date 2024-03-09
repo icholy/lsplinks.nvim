@@ -18,6 +18,9 @@ local M = {}
 ---@type table<integer, lsp.DocumentLink[]>
 local links_by_buf = {}
 
+---@type table<integer, boolean>
+local dirty_by_buf = {}
+
 ---@type integer
 local ns = api.nvim_create_namespace("lsplinks")
 
@@ -127,11 +130,16 @@ M.jump = M.open
 
 -- Refresh the links for the current buffer
 function M.refresh()
+  local bufnr = api.nvim_get_current_buf()
+  if not dirty_by_buf[bufnr] then
+    return
+  end
+  dirty_by_buf[bufnr] = nil
   if not lsp_has_capability("documentLinkProvider") then
     return
   end
   local params = { textDocument = util.make_text_document_params() }
-  vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, result, ctx)
+  vim.lsp.buf_request(bufnr, "textDocument/documentLink", params, function(err, result, ctx)
     if err then
       log.error("lsplinks", err)
       return
@@ -140,8 +148,10 @@ function M.refresh()
       api.nvim_buf_attach(ctx.bufnr, false, {
         on_detach = function(b)
           links_by_buf[b] = nil
+          dirty_by_buf[b] = nil
         end,
         on_lines = function(_, b, _, first_lnum, last_lnum)
+          dirty_by_buf[b] = true
           api.nvim_buf_clear_namespace(b, ns, first_lnum, last_lnum)
         end,
       })
