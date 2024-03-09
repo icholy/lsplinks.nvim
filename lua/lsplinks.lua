@@ -123,7 +123,10 @@ function M.gx()
 end
 
 --- Deprecated
-M.jump = M.open
+function M.jump()
+  vim.notify_once("lsplinks: jump is deprecated, use open instead", vim.log.levels.WARN)
+  M.open()
+end
 
 -- Refresh the links for the current buffer
 function M.refresh()
