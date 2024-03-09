@@ -166,7 +166,10 @@ end
 function M.display()
   api.nvim_buf_clear_namespace(0, ns, 0, -1)
   for _, link in ipairs(M.get()) do
-    api.nvim_buf_set_extmark(
+    -- sometimes the buffer is changed before we get here and the link
+    -- ranges are invalid, so we ignore the error.
+    pcall(
+      api.nvim_buf_set_extmark,
       0,
       ns,
       link.range.start.line,
