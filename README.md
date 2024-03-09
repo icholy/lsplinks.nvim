@@ -12,11 +12,6 @@ The default behaviour of [gx](https://neovim.io/doc/user/various.html#gx) is des
 
 This plugin extends this behaviour to support LSP document links.
 
-### Use-Cases:
-
-* Jump to `$ref` links in swagger/openapi files.
-* Open https://pkg.go.dev from your `go.mod` or import statements.
-
 ### Prerequisites:
 
 An LSP server which supports `textDocument/documentLink`.
@@ -29,6 +24,14 @@ Call `setup` to initialise the plugin:
 require("lsplinks").setup()
 ```
 
-### Demo
+### Demo 1:
 
-![](./demo.gif)
+Jump to `$ref` links in swagger/openapi files.
+
+![](./demo1.gif)
+
+### Demo 1: 
+
+Open https://pkg.go.dev from your `go.mod` or import statements.
+
+![](./demo2.gif)
