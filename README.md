@@ -31,4 +31,4 @@ require("lsplinks").setup()
 
 ### Demo
 
-![](./tty.gif)
+![](./demo.gif)
