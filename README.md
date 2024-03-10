@@ -1,6 +1,6 @@
 # LSPLINKS
 
-> Support for document links for neovim.
+> Support for [document links](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_documentLink) for neovim **0.9+**.
 
 ### Usage
 
