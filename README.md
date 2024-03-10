@@ -21,7 +21,9 @@ An LSP server which supports `textDocument/documentLink`.
 Call `setup` to initialise the plugin:
 
 ``` lua
-require("lsplinks").setup()
+local lsplinks = require("lsplinks")
+lsplinks.setup()
+vim.keymap.set("n", "gx", lsplinks.gx)
 ```
 
 ### Demo 1:

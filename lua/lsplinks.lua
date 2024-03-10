@@ -65,7 +65,6 @@ function M.setup()
     group = augroup,
     callback = M.refresh,
   })
-  vim.keymap.set("n", "gx", M.gx)
 end
 
 --- Return the link under the cursor.
