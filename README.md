@@ -26,6 +26,19 @@ lsplinks.setup()
 vim.keymap.set("n", "gx", lsplinks.gx)
 ```
 
+### Lazy Config:
+
+``` lua
+{
+    "icholy/lsplinks.nvim",
+    setup = function()
+        local lsplinks = require("lsplinks")
+        lsplinks.setup()
+        vim.keymap.set("n", "gx", lsplinks.gx)
+    end
+}
+```
+
 ### Demo 1:
 
 Jump to `$ref` links in swagger/openapi files.
