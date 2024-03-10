@@ -16,7 +16,7 @@ local M = {}
 ---@field target string
 
 ---@type table<integer, lsp.DocumentLink[]>
-local links_by_buf = {}
+  local links_by_buf = {}
 
 ---@type integer
 local ns = api.nvim_create_namespace("lsplinks")
