@@ -111,19 +111,19 @@ function M.open(uri)
     end
   else
     if vim.ui.open then
-    	vim.ui.open(uri)
+      vim.ui.open(uri)
     else
-    	-- for nvim earlier than 0.10
-    	local opener
-    	if vim.fn.has("macunix") == 1 then
-    		opener = "open"
-    	elseif vim.fn.has("linux") == 1 then
-    		opener = "xdg-open"
-    	elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
-    		opener = "start"
-    	end
-    	local openCommand = string.format("%s '%s' >/dev/null 2>&1", opener, uri)
-    	vim.fn.system(openCommand)
+      -- for nvim earlier than 0.10
+      local opener
+      if vim.fn.has("macunix") == 1 then
+        opener = "open"
+      elseif vim.fn.has("linux") == 1 then
+        opener = "xdg-open"
+      elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
+        opener = "start"
+      end
+      local openCommand = string.format("%s '%s' >/dev/null 2>&1", opener, uri)
+      vim.fn.system(openCommand)
     end
   end
   return true
