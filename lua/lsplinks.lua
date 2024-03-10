@@ -61,9 +61,9 @@ local augroup = api.nvim_create_augroup("lsplinks", { clear = true })
 
 --- Setup autocommands for refreshing links
 function M.setup()
-  api.nvim_create_autocmd({"InsertLeave", "BufEnter", "CursorHold", "LspAttach"}, {
+  api.nvim_create_autocmd({ "InsertLeave", "BufEnter", "CursorHold", "LspAttach" }, {
     group = augroup,
-    callback = M.refresh
+    callback = M.refresh,
   })
   vim.keymap.set("n", "gx", M.gx)
 end
@@ -185,18 +185,11 @@ function M.display()
   for _, link in ipairs(M.get()) do
     -- sometimes the buffer is changed before we get here and the link
     -- ranges are invalid, so we ignore the error.
-    pcall(
-      api.nvim_buf_set_extmark,
-      0,
-      ns,
-      link.range.start.line,
-      link.range.start.character,
-      {
-        end_row = link.range["end"].line,
-        end_col = link.range["end"].character,
-        hl_group="Underlined"
-      }
-    )
+    pcall(api.nvim_buf_set_extmark, 0, ns, link.range.start.line, link.range.start.character, {
+      end_row = link.range["end"].line,
+      end_col = link.range["end"].character,
+      hl_group = "Underlined",
+    })
   end
 end
 
