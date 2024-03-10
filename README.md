@@ -26,7 +26,7 @@ lsplinks.setup()
 vim.keymap.set("n", "gx", lsplinks.gx)
 ```
 
-### Lazy Config:
+### Lazy Configuration:
 
 ``` lua
 {
