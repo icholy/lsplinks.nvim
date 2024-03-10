@@ -2,7 +2,7 @@
 
 > Support for document links for neovim.
 
-**Note**: this plugin requires nightly.
+**Note**: this plugin requires neovim 0.10 which is currently unreleased. So it's only usable with neovim nightly.
 
 ### Usage
 
