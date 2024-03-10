@@ -2,8 +2,6 @@
 
 > Support for document links for neovim.
 
-**Note**: this plugin requires neovim 0.10 which is currently unreleased. So it's only usable with neovim nightly.
-
 ### Usage
 
 The default behaviour of [gx](https://neovim.io/doc/user/various.html#gx) is described in the neovim help as:

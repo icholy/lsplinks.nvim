@@ -110,12 +110,26 @@ function M.open(uri)
       api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
     end
   else
-    vim.ui.open(uri)
+    if vim.ui.open then
+      vim.ui.open(uri)
+    else
+      -- for nvim earlier than 0.10
+      local opener
+      if vim.fn.has("macunix") == 1 then
+        opener = "open"
+      elseif vim.fn.has("linux") == 1 then
+        opener = "xdg-open"
+      elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
+        opener = "start"
+      end
+      local openCommand = string.format("%s '%s' >/dev/null 2>&1", opener, uri)
+      vim.fn.system(openCommand)
+    end
   end
   return true
 end
 
---- Convinience function which opens current link with fallback
+--- Convenience function which opens current link with fallback
 --- to default gx behaviour
 function M.gx()
   local uri = M.current() or vim.fn.expand("<cfile>")
