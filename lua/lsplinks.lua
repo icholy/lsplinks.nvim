@@ -129,7 +129,7 @@ function M.open(uri)
   return true
 end
 
---- Convinience function which opens current link with fallback
+--- Convenience function which opens current link with fallback
 --- to default gx behaviour
 function M.gx()
   local uri = M.current() or vim.fn.expand("<cfile>")
