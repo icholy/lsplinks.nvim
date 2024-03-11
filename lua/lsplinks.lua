@@ -74,6 +74,9 @@ function M.current()
   local cursor = get_cursor_pos()
   for _, link in ipairs(M.get()) do
     if in_range(cursor, link.range) then
+      if not link.target then
+        vim.notify_once("lsplinks: documentLink/resolve is not implemented", vim.log.levels.WARN)
+      end
       return link.target
     end
   end
