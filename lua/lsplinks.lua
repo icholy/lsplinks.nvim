@@ -124,8 +124,7 @@ function M.open(uri)
       elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
         opener = "start"
       end
-      local openCommand = string.format("%s '%s' >/dev/null 2>&1", opener, uri)
-      vim.fn.system(openCommand)
+      vim.fn.system(string.format("%s '%s' >/dev/null 2>&1", opener, uri))
     end
   end
   return true
