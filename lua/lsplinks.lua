@@ -15,8 +15,18 @@ local M = {}
 ---@field range lsp.Range
 ---@field target string
 
+---@class lsplinks.Options
+---@field hl_group string | nil
+---@field highlight boolean | nil
+
 ---@type table<integer, lsp.DocumentLink[]>
 local links_by_buf = {}
+
+---@type lsplinks.Options
+local options = {
+  hl_group = "Underlined",
+  highlight = true,
+}
 
 ---@type integer
 local ns = api.nvim_create_namespace("lsplinks")
@@ -60,7 +70,15 @@ end
 local augroup = api.nvim_create_augroup("lsplinks", { clear = true })
 
 --- Setup autocommands for refreshing links
-function M.setup()
+---@param opts lsplinks.Options | nil
+function M.setup(opts)
+  opts = opts or {}
+  if opts.hl_group ~= nil then
+    options.hl_group = opts.hl_group
+  end
+  if opts.highlight ~= nil then
+    options.highlight = opts.highlight
+  end
   api.nvim_create_autocmd({ "InsertLeave", "BufEnter", "CursorHold", "LspAttach" }, {
     group = augroup,
     callback = M.refresh,
@@ -165,7 +183,9 @@ function M.refresh()
       })
     end
     links_by_buf[ctx.bufnr] = result
-    M.display()
+    if options.highlight then
+      M.display()
+    end
   end)
 end
 
@@ -189,7 +209,7 @@ function M.display()
     pcall(api.nvim_buf_set_extmark, 0, ns, link.range.start.line, link.range.start.character, {
       end_row = link.range["end"].line,
       end_col = link.range["end"].character,
-      hl_group = "Underlined",
+      hl_group = options.hl_group,
     })
   end
 end

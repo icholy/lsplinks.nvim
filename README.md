@@ -39,6 +39,15 @@ vim.keymap.set("n", "gx", lsplinks.gx)
 }
 ```
 
+### Default Configuration:
+
+``` lua
+lsplinks.setup({
+    highlight = true,
+    hl_group = "Underlined",
+})
+```
+
 ### Demo 1:
 
 Jump to `$ref` links in swagger/openapi files.
