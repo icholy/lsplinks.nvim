@@ -31,7 +31,7 @@ vim.keymap.set("n", "gx", lsplinks.gx)
 ``` lua
 {
     "icholy/lsplinks.nvim",
-    setup = function()
+    config = function()
         local lsplinks = require("lsplinks")
         lsplinks.setup()
         vim.keymap.set("n", "gx", lsplinks.gx)
