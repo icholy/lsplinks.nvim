@@ -59,7 +59,14 @@ end
 ---@param name string
 ---@return boolean
 local function lsp_has_capability(name)
-  for _, client in ipairs(vim.lsp.buf_get_clients()) do
+  local clients = nil
+  if vim.lsp.get_clients then
+    local bufnr = api.nvim_get_current_buf()
+    clients = vim.lsp.get_clients({ bufnr = bufnr })
+  else
+    clients = vim.lsp.buf_get_clients()
+  end
+  for _, client in ipairs(clients) do
     if client.server_capabilities[name] then
       return true
     end
