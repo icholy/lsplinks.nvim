@@ -162,12 +162,6 @@ function M.gx()
   M.open(uri)
 end
 
---- Deprecated
-function M.jump()
-  vim.notify_once("lsplinks: jump is deprecated, use open instead", vim.log.levels.WARN)
-  M.open()
-end
-
 -- Refresh the links for the current buffer
 function M.refresh()
   if not lsp_has_capability("documentLinkProvider") then
