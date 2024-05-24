@@ -114,6 +114,13 @@ function M.open(link)
   return true
 end
 
+--- Convenience function which opens current link with fallback
+--- to default gx behaviour
+function M.gx()
+  local uri = M.current() or vim.fn.expand("<cfile>")
+  M.open(uri)
+end
+
 -- Refresh the links for the current buffer
 function M.refresh()
   local clients = vim.lsp.get_clients({ bufnr = 0, method = "textDocument/documentLink" })
