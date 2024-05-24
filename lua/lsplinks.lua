@@ -100,7 +100,7 @@ function M.open(link)
   local uri = link.target
   if not uri then
     vim.notify_once("lsplinks: documentLink/resolve is not implemented", vim.log.levels.ERROR)
-    return nil
+    return false
   end
   if link.target:find("^file:/") then
     util.jump_to_location({ uri = uri }, "utf-8", true)
