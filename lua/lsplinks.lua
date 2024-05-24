@@ -74,17 +74,14 @@ function M.setup(opts)
   })
 end
 
---- Return the link under the cursor.
+--- Return the first link under the cursor.
 ---
----@return string | nil
+---@return lsp.DocumentLink | nil
 function M.current()
   local cursor = get_cursor_pos()
   for _, link in ipairs(M.get()) do
     if in_range(cursor, link.range) then
-      if not link.target then
-        vim.notify_once("lsplinks: documentLink/resolve is not implemented", vim.log.levels.WARN)
-      end
-      return link.target
+      return link
     end
   end
   return nil
@@ -93,14 +90,19 @@ end
 --- Open the link under the cursor if one exists.
 --- The return value indicates if a link was found.
 ---
----@param uri string | nil
+---@param link lsp.DocumentLink | nil
 ---@return boolean
-function M.open(uri)
-  uri = uri or M.current()
-  if not uri then
+function M.open(link)
+  link = link or M.current()
+  if not link then
     return false
   end
-  if uri:find("^file:/") then
+  local uri = link.target
+  if not uri then
+    vim.notify_once("lsplinks: documentLink/resolve is not implemented", vim.log.levels.ERROR)
+    return nil
+  end
+  if link.target:find("^file:/") then
     util.jump_to_location({ uri = uri }, "utf-8", true)
     local line_no, col_no = uri:match(".-#(%d+),(%d+)")
     if line_no then
