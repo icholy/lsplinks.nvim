@@ -117,7 +117,7 @@ end
 --- Convenience function which opens current link with fallback
 --- to default gx behaviour
 function M.gx()
-  local uri = M.current() or vim.fn.expand("<cfile>")
+  local uri = M.current() or { target = vim.fn.expand("<cfile>") }
   M.open(uri)
 end
 
