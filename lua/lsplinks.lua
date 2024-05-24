@@ -3,6 +3,24 @@ local log = require("vim.lsp.log")
 local api = vim.api
 local M = {}
 
+---@class lsplinks
+M.__index = M
+
+---@return lsplinks
+function M.new()
+  return setmetatable({}, M)
+end
+
+--- Get the first link under the cursor
+---@return lsp.DocumentLink
+function M.first()
+  for _, link in ipairs(M.get()) do
+    return link
+  end
+  return nil
+end
+
+
 ---@class lsp.Position
 ---@field line integer
 ---@field character integer
