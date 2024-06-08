@@ -173,6 +173,9 @@ function M.refresh()
       log.error("lsplinks", err)
       return
     end
+    if not api.nvim_buf_is_valid(ctx.bufnr) then
+      return
+    end
     if not links_by_buf[ctx.bufnr] then
       api.nvim_buf_attach(ctx.bufnr, false, {
         on_detach = function(b)
