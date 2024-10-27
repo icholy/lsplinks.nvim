@@ -131,7 +131,7 @@ function M.open(uri)
     return false
   end
   if uri:find("^file:/") then
-    util.jump_to_location({ uri = remove_uri_fragment(uri) }, "utf-8", true)
+    util.show_document({ uri = remove_uri_fragment(uri) }, "utf-8", { reuse_win = true, focus = true })
     local line_no, col_no = uri:match(".-#(%d+),(%d+)")
     if line_no then
       api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
