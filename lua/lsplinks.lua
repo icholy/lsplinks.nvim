@@ -204,15 +204,26 @@ function M.get(bufnr)
   return links_by_buf[bufnr] or {}
 end
 
+--- Translate a character index to a byte index
+---@param lnum integer
+---@param index integer
+---@return integer
+local function translate(lnum, index)
+  local line = vim.api.nvim_buf_get_lines(0, lnum, lnum + 1, true)
+  return vim.fn.byteidx(line[1], index)
+end
+
 --- Highlight links in the current buffer
 function M.display()
   api.nvim_buf_clear_namespace(0, ns, 0, -1)
   for _, link in ipairs(M.get()) do
+    local start_lnum = link.range.start.line
+    local end_lnum = link.range["end"].line
     -- sometimes the buffer is changed before we get here and the link
     -- ranges are invalid, so we ignore the error.
-    pcall(api.nvim_buf_set_extmark, 0, ns, link.range.start.line, link.range.start.character, {
-      end_row = link.range["end"].line,
-      end_col = link.range["end"].character,
+    pcall(api.nvim_buf_set_extmark, 0, ns, start_lnum, translate(start_lnum, link.range.start.character), {
+      end_row = end_lnum,
+      end_col = translate(end_lnum, link.range["end"].character),
       hl_group = options.hl_group,
     })
   end
