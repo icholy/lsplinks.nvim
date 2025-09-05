@@ -56,23 +56,6 @@ local function in_range(pos, range)
   end
 end
 
----@param name string
----@return boolean
-local function lsp_has_capability(name)
-  local clients = nil
-  if vim.lsp.get_clients then
-    local bufnr = api.nvim_get_current_buf()
-    clients = vim.lsp.get_clients({ bufnr = bufnr })
-  else
-    clients = vim.lsp.buf_get_clients()
-  end
-  for _, client in ipairs(clients) do
-    if client.server_capabilities[name] then
-      return true
-    end
-  end
-  return false
-end
 
 local augroup = api.nvim_create_augroup("lsplinks", { clear = true })
 
@@ -108,18 +91,6 @@ function M.current()
   return nil
 end
 
---- Return the uri without the fragment
----
----@param uri string
----@return string
-local function remove_uri_fragment(uri)
-  local fragment_index = uri:find("#")
-  if fragment_index ~= nil then
-    uri = uri:sub(1, fragment_index - 1)
-  end
-  return uri
-end
-
 --- Open the link under the cursor if one exists.
 --- The return value indicates if a link was found.
 ---
@@ -131,26 +102,13 @@ function M.open(uri)
     return false
   end
   if uri:find("^file:/") then
-    util.show_document({ uri = remove_uri_fragment(uri) }, "utf-8", { reuse_win = true, focus = true })
+    util.show_document({ uri = uri }, "utf-8", { reuse_win = true, focus = true })
     local line_no, col_no = uri:match(".-#(%d+),(%d+)")
     if line_no then
       api.nvim_win_set_cursor(0, { tonumber(line_no), tonumber(col_no) - 1 })
     end
   else
-    if vim.ui.open then
-      vim.ui.open(uri)
-    else
-      -- for nvim earlier than 0.10
-      local opener
-      if vim.fn.has("macunix") == 1 then
-        opener = "open"
-      elseif vim.fn.has("linux") == 1 then
-        opener = "xdg-open"
-      elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
-        opener = "start"
-      end
-      vim.fn.system(string.format("%s '%s' >/dev/null 2>&1", opener, uri))
-    end
+    vim.ui.open(uri)
   end
   return true
 end
@@ -164,9 +122,6 @@ end
 
 -- Refresh the links for the current buffer
 function M.refresh()
-  if not lsp_has_capability("documentLinkProvider") then
-    return
-  end
   local params = { textDocument = util.make_text_document_params() }
   vim.lsp.buf_request(0, "textDocument/documentLink", params, function(err, result, ctx)
     if err then
@@ -190,7 +145,8 @@ function M.refresh()
     if options.highlight then
       M.display()
     end
-  end)
+  end, function() end
+  )
 end
 
 --- Get links for bufnr
